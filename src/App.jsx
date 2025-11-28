@@ -6,18 +6,19 @@ function App() {
   const [restauranteSeleccionado, setRestauranteSeleccionado] = useState(null);
 
   useEffect(() => {
-    // ⚠️ CAMBIA ESTO POR TU LINK DE RENDER:
+    // 👇 TU LINK DE RENDER AQUÍ (Asegúrate que sea el correcto)
     fetch('https://cucei-food-api.onrender.com/api/restaurantes')
       .then(res => res.json())
       .then(data => setRestaurantes(data))
       .catch(err => console.error("Error cargando datos:", err));
   }, []);
 
-  // Funciones para abrir y cerrar la ventana flotante
+  // Función para abrir el menú
   const verMenu = (restaurante) => {
     setRestauranteSeleccionado(restaurante);
   };
 
+  // Función para cerrar el menú
   const cerrarMenu = () => {
     setRestauranteSeleccionado(null);
   };
@@ -35,7 +36,6 @@ function App() {
         {restaurantes.map(rest => (
           <div key={rest.id} className="card">
             <div className="card-image-container">
-               {/* Si la imagen falla, pone una gris por defecto */}
                <img 
                  src={rest.imagen_url} 
                  alt={rest.nombre} 
@@ -53,11 +53,13 @@ function App() {
         ))}
       </div>
 
-      {/* AQUÍ ESTÁ EL CÓDIGO DE LA VENTANA FLOTANTE */}
+      {/* VENTANA FLOTANTE (MODAL) */}
       {restauranteSeleccionado && (
         <div className="modal-overlay" onClick={cerrarMenu}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            {/* Botón de cerrar (X) */}
             <button className="btn-close" onClick={cerrarMenu}>✖</button>
+            
             <h2>{restauranteSeleccionado.nombre}</h2>
             <img src={restauranteSeleccionado.imagen_url} alt="Portada" className="modal-img"/>
             
@@ -67,8 +69,9 @@ function App() {
                 {restauranteSeleccionado.menu}
               </div>
             </div>
+            
+            {/* AQUÍ ANTES ESTABA EL BOTÓN VERDE, YA LO QUITAMOS */}
 
-            <button className="btn-order">¡Excelente elección!</button>
           </div>
         </div>
       )}
