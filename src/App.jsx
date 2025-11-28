@@ -7,7 +7,7 @@ function App() {
 
   useEffect(() => {
     // ⚠️ CAMBIA ESTO POR TU LINK DE RENDER:
-    fetch('https://cucei-food-api.onrender.com')
+    fetch('https://cucei-food-api.onrender.com/api/restaurantes')
       .then(res => res.json())
       .then(data => setRestaurantes(data))
       .catch(err => console.error("Error cargando datos:", err));
