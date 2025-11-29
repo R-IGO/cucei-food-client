@@ -6,21 +6,50 @@ function App() {
   const [restauranteSeleccionado, setRestauranteSeleccionado] = useState(null);
 
   useEffect(() => {
-    // 👇 TU LINK DE RENDER AQUÍ (Asegúrate que sea el correcto)
+    // 👇 TU LINK DE RENDER (Verifica que sea el correcto)
     fetch('https://cucei-food-api.onrender.com/api/restaurantes')
       .then(res => res.json())
       .then(data => setRestaurantes(data))
       .catch(err => console.error("Error cargando datos:", err));
   }, []);
 
-  // Función para abrir el menú
   const verMenu = (restaurante) => {
     setRestauranteSeleccionado(restaurante);
   };
 
-  // Función para cerrar el menú
   const cerrarMenu = () => {
     setRestauranteSeleccionado(null);
+  };
+
+  // --- FUNCIÓN MÁGICA: DETECTOR INTELIGENTE DE MENÚ ---
+  const renderizarMenu = (textoMenu) => {
+    if (!textoMenu) return null;
+
+    // Dividimos el texto línea por línea
+    const lineas = textoMenu.split('\n');
+
+    return lineas.map((linea, index) => {
+      const lineaLimpia = linea.trim();
+      
+      if (!lineaLimpia) return null; // Ignorar líneas vacías
+
+      // SI empieza con guion (-) o punto (•), es un PLATILLO
+      if (lineaLimpia.startsWith('-') || lineaLimpia.startsWith('•')) {
+        return (
+          <div key={index} className="menu-item">
+            {lineaLimpia}
+          </div>
+        );
+      } 
+      // SI NO, asumimos que es un TÍTULO DE CATEGORÍA (Ej: BEBIDAS)
+      else {
+        return (
+          <h3 key={index} className="menu-category">
+            {lineaLimpia}
+          </h3>
+        );
+      }
+    });
   };
 
   return (
@@ -46,31 +75,30 @@ function App() {
               <h2>{rest.nombre}</h2>
               <p className="desc">{rest.descripcion}</p>
               <button className="btn-menu" onClick={() => verMenu(rest)}>
-                Ver Menú Completo 📜
+                Ver Menú 📜
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* VENTANA FLOTANTE (MODAL) */}
+      {/* MODAL */}
       {restauranteSeleccionado && (
         <div className="modal-overlay" onClick={cerrarMenu}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            {/* Botón de cerrar (X) */}
             <button className="btn-close" onClick={cerrarMenu}>✖</button>
             
-            <h2>{restauranteSeleccionado.nombre}</h2>
-            <img src={restauranteSeleccionado.imagen_url} alt="Portada" className="modal-img"/>
-            
-            <div className="menu-scroll">
-              <h3>Menú:</h3>
-              <div className="menu-text">
-                {restauranteSeleccionado.menu}
-              </div>
+            <div className="modal-header">
+              <h2>{restauranteSeleccionado.nombre}</h2>
+              <img src={restauranteSeleccionado.imagen_url} alt="Portada" className="modal-img"/>
             </div>
             
-            {/* AQUÍ ANTES ESTABA EL BOTÓN VERDE, YA LO QUITAMOS */}
+            <div className="menu-scroll">
+              {/* Aquí usamos la función mágica en lugar de mostrar texto plano */}
+              <div className="menu-formatted">
+                {renderizarMenu(restauranteSeleccionado.menu)}
+              </div>
+            </div>
 
           </div>
         </div>
